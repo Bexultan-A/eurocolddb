@@ -1,14 +1,13 @@
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel
 from typing import Optional
-from app.utils.phone import normalize_phone_e164
 
 class RecordBase(BaseModel):
     master_name: Optional[str] = None
     reminder: Optional[int] = None
 
     client_full_name: Optional[str] = None
-    phone_raw: Optional[str] = None
-    phone_e164: Optional[str] = None
+    contact_number: Optional[str] = None
+    phone: Optional[str] = None
 
     city: Optional[str] = None
     branch: Optional[str] = None
@@ -24,11 +23,6 @@ class RecordBase(BaseModel):
     messenger: Optional[str] = None
     region: str
 
-    @field_validator("phone_e164", mode="before")
-    @classmethod
-    def _norm_phone(cls, v):
-        return normalize_phone_e164(v)
-
 class RecordCreate(RecordBase):
     pass
 
@@ -37,8 +31,8 @@ class RecordUpdate(BaseModel):
     reminder: Optional[int] = None
 
     client_full_name: Optional[str] = None
-    phone_raw: Optional[str] = None
-    phone_e164: Optional[str] = None
+    contact_number: Optional[str] = None
+    phone: Optional[str] = None
 
     city: Optional[str] = None
     branch: Optional[str] = None
@@ -53,11 +47,6 @@ class RecordUpdate(BaseModel):
     language: Optional[str] = None
     messenger: Optional[str] = None
     region: Optional[str] = None
-
-    @field_validator("phone_e164", mode="before")
-    @classmethod
-    def _norm_phone(cls, v):
-        return normalize_phone_e164(v)
 
 class RecordOut(RecordBase):
     id: int

@@ -27,7 +27,7 @@ async def list_records(
     external_id: Optional[str] = None,
     sort_by: str = Query("id", pattern="^(id|created_at|updated_at|ticket_number|external_id)$"),
     sort_dir: str = Query("desc", pattern="^(asc|desc)$"),
-    limit: int = Query(20, ge=1, le=200),
+    limit: int = Query(20, ge=1, le=1000),
     offset: int = Query(0, ge=0),
     db: AsyncSession = Depends(get_db),
 ):

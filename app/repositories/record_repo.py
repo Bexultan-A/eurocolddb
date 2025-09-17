@@ -93,7 +93,7 @@ class RecordRepository:
         ilike_fields = [
             Record.client_full_name, Record.master_name, Record.reason,
             Record.problem, Record.city, Record.branch, Record.language,
-            Record.messenger, Record.ticket_number, Record.external_id, Record.phone_e164,
+            Record.messenger, Record.ticket_number, Record.external_id, Record.phone, Record.contact_number,
         ]
         ilike_cond = or_(*[f.ilike(f"%{q}%") for f in ilike_fields])
 

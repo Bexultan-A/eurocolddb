@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.core.logging import setup_logging
 from app.api.v1.records import router as records_router
+from app.api.v1.branch_flags import router as branch_flags_router
 
 def create_app() -> FastAPI:
     setup_logging(settings.APP_DEBUG)
@@ -30,6 +31,7 @@ def create_app() -> FastAPI:
 
     # v1 routes
     app.include_router(records_router, prefix="/api/v1")
+    app.include_router(branch_flags_router, prefix="/api/v1")
 
     return app
 

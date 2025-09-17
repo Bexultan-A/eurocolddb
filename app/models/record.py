@@ -13,8 +13,8 @@ class Record(Base):
     reminder: Mapped[int | None]     = mapped_column(Integer, nullable=True)
 
     client_full_name: Mapped[str | None] = mapped_column(CITEXT, nullable=True)
-    phone_raw: Mapped[str | None]    = mapped_column(Text, nullable=True)
-    phone_e164: Mapped[str | None]   = mapped_column(Text, nullable=True)
+    contact_number: Mapped[str | None]    = mapped_column(Text, nullable=True)
+    phone: Mapped[str | None]             = mapped_column(Text, nullable=True)
 
     city: Mapped[str | None]         = mapped_column(CITEXT, nullable=True)
     branch: Mapped[str | None]       = mapped_column(CITEXT, nullable=True)
