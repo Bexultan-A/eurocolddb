@@ -36,7 +36,7 @@ async def list_flags(
     branch: Optional[str] = None,
     region: Optional[str] = None,
     request: Optional[bool] = Query(None),
-    limit: int = Query(20, ge=1, le=200),
+    limit: int = Query(20, ge=1, le=1000),
     offset: int = Query(0, ge=0),
     sort_by: str = Query("id", pattern="^(id|branch|region)$"),
     sort_dir: str = Query("desc", pattern="^(asc|desc)$"),
