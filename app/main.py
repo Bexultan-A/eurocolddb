@@ -10,6 +10,7 @@ def create_app() -> FastAPI:
     setup_logging(settings.APP_DEBUG)
 
     app = FastAPI(
+        root_path="/api29",
         title=settings.APP_NAME,
         version=settings.APP_VERSION
     )
