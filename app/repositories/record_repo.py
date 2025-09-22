@@ -4,6 +4,10 @@ from sqlalchemy import select, func, literal_column, or_, text
 from app.models.record import Record
 from app.core.config import settings
 
+def _escape_like(s: str) -> str:
+    # экранируем спецсимволы для LIKE/ILIKE
+    return s.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+
 class RecordRepository:
 
     # -------- CRUD --------
@@ -30,31 +34,36 @@ class RecordRepository:
 
     # -------- List + filters --------
     async def list(
-        self,
-        db: AsyncSession,
-        *,
-        region: Optional[str] = None,
-        city: Optional[str] = None,
-        branch: Optional[str] = None,
-        language: Optional[str] = None,
-        messenger: Optional[str] = None,
-        ticket_number: Optional[str] = None,
-        external_id: Optional[str] = None,
-        sort_by: str = "id",
-        sort_dir: str = "desc",
-        limit: int = 20,
-        offset: int = 0,
-    ) -> Tuple[int, Sequence[Record]]:
+        self, db: AsyncSession,
+        *, region=None, city=None, branch=None,
+        language=None, messenger=None,
+        ticket_number: str | None = None,
+        external_id: str | None = None,
+        sort_by="id", sort_dir="desc",
+        limit=20, offset=0
+    ):
         stmt = select(Record)
-        if region:        stmt = stmt.where(Record.region == region)
-        if city:          stmt = stmt.where(Record.city == city)
-        if branch:        stmt = stmt.where(Record.branch == branch)
-        if language:      stmt = stmt.where(Record.language == language)
-        if messenger:     stmt = stmt.where(Record.messenger == messenger)
-        if ticket_number: stmt = stmt.where(Record.ticket_number == ticket_number)
-        if external_id:   stmt = stmt.where(Record.external_id == external_id)
 
-        # sort
+        if region:
+            stmt = stmt.where(Record.region == region)
+        if city:
+            stmt = stmt.where(Record.city == city)
+        if branch:
+            stmt = stmt.where(Record.branch == branch)
+        if language:
+            stmt = stmt.where(Record.language == language)
+        if messenger:
+            stmt = stmt.where(Record.messenger == messenger)
+
+        # >>> НОВОЕ: префиксный поиск
+        if ticket_number:
+            esc = _escape_like(ticket_number.strip())
+            stmt = stmt.where(Record.ticket_number.ilike(f"{esc}%", escape="\\"))
+
+        if external_id:
+            esc = _escape_like(external_id.strip())
+            stmt = stmt.where(Record.external_id.ilike(f"{esc}%", escape="\\"))
+
         sortable = {
             "id": Record.id,
             "created_at": Record.created_at,
@@ -63,15 +72,10 @@ class RecordRepository:
             "external_id": Record.external_id,
         }
         col = sortable.get(sort_by, Record.id)
-        stmt = stmt.order_by(col.desc() if sort_dir.lower() == "desc" else col.asc())
+        stmt = stmt.order_by(col.desc() if sort_dir == "desc" else col.asc())
 
-        # count
-        count_stmt = select(func.count()).select_from(stmt.subquery())
-        total = (await db.execute(count_stmt)).scalar_one()
-
-        # page
-        stmt = stmt.limit(limit).offset(offset)
-        items = (await db.execute(stmt)).scalars().all()
+        total = (await db.execute(select(func.count()).select_from(stmt.subquery()))).scalar_one()
+        items = (await db.execute(stmt.limit(limit).offset(offset))).scalars().all()
         return total, items
 
     # -------- Search --------
