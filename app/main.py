@@ -11,10 +11,7 @@ def create_app() -> FastAPI:
 
     app = FastAPI(
         title=settings.APP_NAME,
-        version=settings.APP_VERSION,
-        docs_url="/docs",
-        openapi_url="/openapi.json",
-        redoc_url="/redoc",
+        version=settings.APP_VERSION
     )
 
     # CORS
