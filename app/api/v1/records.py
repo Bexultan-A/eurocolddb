@@ -25,6 +25,7 @@ async def list_records(
     messenger: Optional[str] = None,
     ticket_number: Optional[str] = None,
     external_id: Optional[str] = None,
+    message_id: Optional[int] = None,
     sort_by: str = Query("id", pattern="^(id|created_at|updated_at|ticket_number|external_id)$"),
     sort_dir: str = Query("desc", pattern="^(asc|desc)$"),
     limit: int = Query(20, ge=1, le=10000),

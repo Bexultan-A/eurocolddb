@@ -23,6 +23,8 @@ class RecordBase(BaseModel):
     messenger: Optional[str] = None
     region: str
 
+    message_id: Optional[int] = None
+
 class RecordCreate(RecordBase):
     pass
 
@@ -47,6 +49,8 @@ class RecordUpdate(BaseModel):
     language: Optional[str] = None
     messenger: Optional[str] = None
     region: Optional[str] = None
+
+    message_id: Optional[int] = None
 
 class RecordOut(RecordBase):
     id: int

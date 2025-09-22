@@ -33,36 +33,34 @@ class RecordRepository:
         await db.delete(rec)
 
     # -------- List + filters --------
+class RecordRepository:
     async def list(
         self, db: AsyncSession,
         *, region=None, city=None, branch=None,
         language=None, messenger=None,
         ticket_number: str | None = None,
         external_id: str | None = None,
+        message_id: int | None = None,
         sort_by="id", sort_dir="desc",
         limit=20, offset=0
     ):
         stmt = select(Record)
 
-        if region:
-            stmt = stmt.where(Record.region == region)
-        if city:
-            stmt = stmt.where(Record.city == city)
-        if branch:
-            stmt = stmt.where(Record.branch == branch)
-        if language:
-            stmt = stmt.where(Record.language == language)
-        if messenger:
-            stmt = stmt.where(Record.messenger == messenger)
+        # фильтры
+        if region:    stmt = stmt.where(Record.region == region)
+        if city:      stmt = stmt.where(Record.city == city)
+        if branch:    stmt = stmt.where(Record.branch == branch)
+        if language:  stmt = stmt.where(Record.language == language)
+        if messenger: stmt = stmt.where(Record.messenger == messenger)
 
-        # >>> НОВОЕ: префиксный поиск
         if ticket_number:
             esc = _escape_like(ticket_number.strip())
             stmt = stmt.where(Record.ticket_number.ilike(f"{esc}%", escape="\\"))
-
         if external_id:
             esc = _escape_like(external_id.strip())
             stmt = stmt.where(Record.external_id.ilike(f"{esc}%", escape="\\"))
+        if message_id is not None:
+            stmt = stmt.where(Record.message_id == message_id)
 
         sortable = {
             "id": Record.id,
@@ -70,6 +68,7 @@ class RecordRepository:
             "updated_at": Record.updated_at,
             "ticket_number": Record.ticket_number,
             "external_id": Record.external_id,
+            "message_id": Record.message_id,  # <- если хочешь сортировать по нему
         }
         col = sortable.get(sort_by, Record.id)
         stmt = stmt.order_by(col.desc() if sort_dir == "desc" else col.asc())

@@ -32,3 +32,5 @@ class Record(Base):
 
     created_at: Mapped[datetime | None] = mapped_column(TIMESTAMP(timezone=True))
     updated_at: Mapped[datetime | None] = mapped_column(TIMESTAMP(timezone=True))
+
+    message_id: Mapped[int | None] = mapped_column(Integer, nullable=True)
