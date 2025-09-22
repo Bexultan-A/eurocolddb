@@ -32,8 +32,6 @@ class RecordRepository:
     async def delete(self, db: AsyncSession, rec: Record) -> None:
         await db.delete(rec)
 
-    # -------- List + filters --------
-class RecordRepository:
     async def list(
         self, db: AsyncSession,
         *, region=None, city=None, branch=None,
@@ -114,3 +112,4 @@ class RecordRepository:
         # page
         items = (await db.execute(base.limit(limit).offset(offset))).scalars().all()
         return total, items
+    
